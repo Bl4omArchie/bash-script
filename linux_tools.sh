@@ -1,13 +1,12 @@
 #!/bin/bash
 
-package_manager=""
-err_usage="[!] Usage: $0 [apt|pacman|dnf|yum]"
+
+err_usage="[!] Usage: ./linux_tools.sh [apt|pacman|dnf|yum] [-i|-u]"
 err_package="[!] Unsupported package manager."
 
 packages=(
     "curl"
     "git"
-    "sagemath"
     "jupyter"
     "libssl-dev"
 )
@@ -18,7 +17,6 @@ codium_extensions=(
     "ms-python.python"
     "ms-python.vscode-pylance"
     "unthrottled.doki-theme"
-    "background"
     "ms-toolsai.jupyter"
     "ms-toolsai.jupyter-keymap"
     "ms-toolsai.jupyter-renderers"
@@ -35,7 +33,7 @@ python_modules=(
 )
 
 select_package_manager() {
-    if [ "$#" -eq 1 ]; then
+    if [ "$#" -ne 2 ]; then
 
         if [ "$1" == "apt" ] || command -v apt &> /dev/null; then
             package_manager="apt"
@@ -61,7 +59,7 @@ install_packages() {
     # Packages installation
     for package in "${packages[@]}"; do
         if ! dpkg -s $package &> /dev/null; then
-            sudo $package_manager install -y $package
+            sudo $package_manager -qq -y install $package
         fi
     done
 
@@ -70,15 +68,16 @@ install_packages() {
         codium --install-extension $extension
     done
 
-    # Python modules
-    pip3 install --upgrade "${python_modules[@]}"
+    # Python modules: install new package or upgrade them
+    pip3 install --upgrade -q "${python_modules[@]}"
 
+    echo ">_ Installation done !"
     # Make an update
     update_packages
 }
 
 update_packages() {
-    case package_manager in
+    case $package_manager in
         "apt"|"dnf"|"yum")
             sudo $package_manager autoremove -y
             sudo $package_manager update
@@ -93,9 +92,29 @@ update_packages() {
             exit 1
             ;;
     esac
+    echo ">_ Update done !"
 }
 
-# first argument is your package manager
-select_package_manager $1
-install_packages
-echo ">_ Installation complet !"
+
+#Two parameters
+main() {
+    package_manager=""
+    select_package_manager $1
+
+    case $2 in
+        "-i")
+            install_packages
+            ;;
+    
+        "-u")
+            update_packages
+            ;;
+        
+        *)
+            echo $err_usage
+            exit 1
+            ;;
+    esac
+}
+
+main $1 $2

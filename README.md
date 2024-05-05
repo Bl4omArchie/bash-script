@@ -5,7 +5,7 @@ This bash script allow you to install and update all your packages, extension an
 How to run the script: 
 ```
 chmod +x linux_tools.sh
-./linux_tools sudo
+./linux_tools apt -i
 ```
 
 Currently, my script support the followingg package manager: **sudo, pacman, dnf and yum**.
