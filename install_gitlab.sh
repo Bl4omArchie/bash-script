@@ -1,3 +1,8 @@
+#!/bin/bash
+
+
+#some test, ignore it
+
 curl --silent "https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh" | sudo bash
 
 # Download the gitlab-ee package and dependencies to /var/cache/apt/archives

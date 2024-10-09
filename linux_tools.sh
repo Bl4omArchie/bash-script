@@ -13,7 +13,6 @@ packages=(
 
 codium_extensions=(
     "CryptoHack.cryptohack-theme"
-    "HackMD.vscode-hackmd"
     "ms-python.python"
     "ms-python.vscode-pylance"
     "unthrottled.doki-theme"

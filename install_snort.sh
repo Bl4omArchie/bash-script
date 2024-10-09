@@ -1,24 +1,38 @@
-sudo apt update
-sudo apt install build-essential libpcap-dev libpcre3-dev libdnet-dev zlib1g-dev
+#!/bin/bash
 
-wget https://www.snort.org/downloads/snort/daq-3.0.0.tar.gz
-tar -xzvf daq-3.0.0.tar.gz
-cd daq-3.0.0
-./configure
-make
-sudo make install
+# You can install snort and libdaq in your current path
+# Or specify a single path for both
+# Or specify a path for libdaq and snort
+err_usage="[!] Usage: $0 /path/to/libdaq /path/to/snort | $0 /path/to/libdaq_and_snort"
 
-wget https://www.snort.org/downloads/snort/snort3-3.1.60.0.tar.gz
 
-tar -xzvf snort3-3.1.60.0.tar.gz
-cd snort3-3.1.60.0
+install_snort() {
+    # Update packages and install depencies
+    sudo apt update
+    sudo apt install build-essential libpcap-dev libpcre3-dev libdnet-dev zlib1g-dev
 
-./configure_cmake.sh --prefix=/usr/local/snort
-cd build
-make
-sudo make install
+    # Install libdaq
+    git clone https://github.com/snort3/libdaq.git
+    cd libdaq
+    ./bootstrap
+    ./configure --prefix=/usr/local/lib/daq_s3
+    sudo make install
+    sudo ldconfig
 
-sudo mkdir /etc/snort /var/log/snort
-sudo cp /usr/local/snort/etc/snort/snort.lua /etc/snort/
+    # Install snort
+    cd ..
+    git clone https://github.com/snort3/snort3.git
+    cd snort3
+    ./configure_cmake.sh
 
-sudo snort -c /etc/snort/snort.lua -i eth0 -A alert_fast
+    # Compile snort
+    cd build
+    make -j $(nproc)
+    sudo make install
+
+    # Verify version
+    snort -V
+}
+
+echo $err_usage;
+#install_snort $1 $2
