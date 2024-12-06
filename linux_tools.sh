@@ -67,7 +67,7 @@ install_packages() {
         codium --install-extension $extension
     done
 
-    # Python modules: install new package or upgrade them
+    # Python modules: install new package or upgrade them. Works only for python3.11<=
     pip3 install --upgrade -q "${python_modules[@]}"
 
     echo ">_ Installation done !"

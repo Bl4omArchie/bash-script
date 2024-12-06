@@ -9,3 +9,9 @@ chmod +x linux_tools.sh
 ```
 
 Currently, my script support the followingg package manager: **sudo, pacman, dnf and yum**.
+Since python3.12 requires virtuel env, the install_packages function will install python packages sucessfully only for python 3.11<=
+
+
+# Install snort
+
+This script manage your snort installation automatically. 
