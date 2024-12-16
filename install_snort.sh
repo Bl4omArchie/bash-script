@@ -19,6 +19,15 @@ snort_required_packages=('cmake' 'libdaq-dev' 'libdnet-dev' 'flex' 'g++' 'hwloc'
 hypperscan_required_packages=('cmake' 'ragel' 'libboost-all-dev' 'build-essential')
 
 
+config_snort_rules() {
+    sudo mkdir /usr/local/etc/rules
+    sudo mkdir /usr/local/etc/so_rules/
+    sudo mkdir /usr/local/etc/lists/
+    sudo touch /usr/local/etc/rules/local.rules
+    sudo touch /usr/local/etc/lists/default.blocklist
+    sudo mkdir /var/log/snort
+}
+
 install_depedencies() {
     for i in "$1"
     do
@@ -83,11 +92,11 @@ install_libdaq() {
 }
 
 start_snort_installation() {
-    #mkdir ~/snort_src && cd ~/snort_src
-    #install_libdaq
+    mkdir ~/snort_src && cd ~/snort_src
+    install_libdaq
 
-    #cd ~/snort_src
-    #install_gperftools
+    cd ~/snort_src
+    install_gperftools
 
     cd ~/snort_src
     install_hyperscan
@@ -100,3 +109,4 @@ start_snort_installation() {
 
 
 start_snort_installation
+config_snort_rules
