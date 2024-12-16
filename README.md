@@ -13,5 +13,5 @@ Since python3.12 requires virtuel env, the install_packages function will instal
 
 
 # Install snort
-
-This script manage your snort installation automatically. 
+Automatic installation of snort with apt package manager.
+This script will install gperftools and hyperscan.
