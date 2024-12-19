@@ -48,7 +48,7 @@ install_snort() {
     cd snort3
     ./configure_cmake.sh --prefix=/usr/local --enable-tcmalloc
     cd build
-    make -j 8 -s
+    make -j $(( $(nproc) / 2 )) -s
     sudo make install -s
     sudo ldconfig
     echo -e "${GREEN}[✔] Snort3 installed !${NC}" 
@@ -63,7 +63,7 @@ install_hyperscan() {
     cd hyperscan
     mkdir build && cd build
     cmake ..
-    make -j $(nprocs) -s
+    make -j $(( $(nproc) / 2 )) -s
     sudo make install -s
     echo -e "${GREEN}[✔] Hyperscan installed !${NC}" 
 }
@@ -73,7 +73,7 @@ install_gperftools() {
     tar xzf gperftools-2.9.1.tar.gz
     cd gperftools-2.9.1/
     ./configure
-    make -j $(nprocs) -s
+    make -j $(( $(nproc) / 2 )) -s
     sudo make install -s
     echo -e "${GREEN}[✔] Gperftools installed !${NC}" 
 }
@@ -86,20 +86,28 @@ install_libdaq() {
     cd libdaq
     ./bootstrap
     ./configure
-    make -j $(nprocs) -s
+    make -j $(( $(nproc) / 2 )) -s
     sudo make install -s
     echo -e "${GREEN}[✔] Libdaq installed !${NC}" 
 }
 
+remove_installation() {
+    sudo rm -rf ~/snort_src
+    sudo rm -rf /usr/local/etc/rules
+    sudo rm -rf /usr/local/etc/so_rules/
+    sudo rm -rf /usr/local/etc/lists/
+    sudo rm -rf /var/log/snort
+}
+
 start_snort_installation() {
-    mkdir ~/snort_src && cd ~/snort_src
-    install_libdaq
+    #mkdir ~/snort_src && cd ~/snort_src
+    #install_libdaq
 
-    cd ~/snort_src
-    install_gperftools
+    #cd ~/snort_src
+    #install_gperftools
 
-    cd ~/snort_src
-    install_hyperscan
+    #cd ~/snort_src
+    #install_hyperscan
 
     cd ~/snort_src
     install_snort
@@ -108,5 +116,6 @@ start_snort_installation() {
 }
 
 
+remove_installation
 start_snort_installation
 config_snort_rules
