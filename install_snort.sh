@@ -1,11 +1,11 @@
 #!/bin/bash
 
 
-###################################################################################################
-#                               ~ Snort installation script ~
+
+# ~ Snort installation script ~
 # Author : archie
-# Description : install snort3, with gperftools and hyperscan,  for linux using apt package manager 
-###################################################################################################
+# Description : install snort3, with gperftools and hyperscan, for linux using apt package manager 
+
 
 
 
@@ -15,8 +15,22 @@ RED="\033[0;31m"
 NC="\033[0m"
 
 #depedencies
-snort_required_packages=('cmake' 'libdaq-dev' 'libdnet-dev' 'flex' 'g++' 'hwloc' 'libluajit-5.1-dev' 'libssl-dev' 'libpcap-dev' 'libpcre3-dev' 'pkg-config' 'zlib1g-dev')
-hypperscan_required_packages=('cmake' 'ragel' 'libboost-all-dev' 'build-essential')
+snort_required_packages=('cmake'            #snort requirements
+                        'libdaq-dev' 
+                        'libdnet-dev' 
+                        'flex' 
+                        'g++' 
+                        'hwloc' 
+                        'libluajit-5.1-dev' 
+                        'libssl-dev' 
+                        'libpcap-dev' 
+                        'libpcre3-dev' 
+                        'pkg-config'
+                        'zlib1g-dev'
+                        'ragel'            #hyperscan requirements
+                        'build-essential'
+                        'libboost-all-dev'
+                        'libhyperscan-dev')
 
 
 config_snort_rules() {
@@ -46,36 +60,12 @@ install_snort() {
         return 0
     fi
     cd snort3
-    ./configure_cmake.sh --prefix=/usr/local --enable-tcmalloc
+    ./configure_cmake.sh
     cd build
     make -j $(( $(nproc) / 2 )) -s
     sudo make install -s
     sudo ldconfig
     echo -e "${GREEN}[✔] Snort3 installed !${NC}" 
-}
-
-install_hyperscan() {
-    install_depedencies $hypperscan_required_packages
-    if  ! git clone -q https://github.com/intel/hyperscan.git; then 
-        echo -e "${RED}[✘] Error : couldn't get hyperscan repository${NC}"
-        return 0
-    fi
-    cd hyperscan
-    mkdir build && cd build
-    cmake ..
-    make -j $(( $(nproc) / 2 )) -s
-    sudo make install -s
-    echo -e "${GREEN}[✔] Hyperscan installed !${NC}" 
-}
-
-install_gperftools() {
-    wget https://github.com/gperftools/gperftools/releases/download/gperftools-2.9.1/gperftools-2.9.1.tar.gz
-    tar xzf gperftools-2.9.1.tar.gz
-    cd gperftools-2.9.1/
-    ./configure
-    make -j $(( $(nproc) / 2 )) -s
-    sudo make install -s
-    echo -e "${GREEN}[✔] Gperftools installed !${NC}" 
 }
 
 install_libdaq() {
@@ -91,28 +81,30 @@ install_libdaq() {
     echo -e "${GREEN}[✔] Libdaq installed !${NC}" 
 }
 
+remove_snort_installation() {
+    sudo rm -rf ~/snort_src/snort3
+    sudo rm -rf /usr/local/snort
+    sudo rm -rf /usr/local/bin/snort*
+    sudo rm -rf /usr/local/lib/snort*
+    sudo rm -rf /usr/local/etc/snort/
+    sudo rm -rf /var/log/snort/
+}
+
 remove_installation() {
+    remove_snort_installation
     sudo rm -rf ~/snort_src
-    sudo rm -rf /usr/local/etc/rules
-    sudo rm -rf /usr/local/etc/so_rules/
-    sudo rm -rf /usr/local/etc/lists/
-    sudo rm -rf /var/log/snort
 }
 
 start_snort_installation() {
-    #mkdir ~/snort_src && cd ~/snort_src
-    #install_libdaq
-
-    #cd ~/snort_src
-    #install_gperftools
-
-    #cd ~/snort_src
-    #install_hyperscan
+    mkdir ~/snort_src && cd ~/snort_src
+    install_libdaq
 
     cd ~/snort_src
     install_snort
 
     snort -V
+
+    config_hyperscan
 }
 
 
