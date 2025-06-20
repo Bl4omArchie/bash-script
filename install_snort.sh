@@ -44,7 +44,7 @@ set_variables() {
     pulledpork_etc="/usr/local/etc/pulledpork/"
 }
 
-install_depedencies() {
+install_dependencies() {
     for i in "$@"; do
         if ! dpkg -s "${i}" >/dev/null 2>&1; then
             sudo apt install "${i}" -y -qq
@@ -126,13 +126,14 @@ remove() {
 start_install() {
     set_variables
 
-    install_depedencies "${snort_required_packages[@]}"
+    install_dependencies "${snort_required_packages[@]}"
 
     mkdir ${snort_install} && cd ${snort_install}
     install_libdaq
 
     cd ${snort_install}
     install_snort
+    set_up_snort()
 
     cd ${snort_install}
     install_pulledpork3
