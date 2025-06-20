@@ -24,7 +24,7 @@ snort_required_packages=('cmake'            #snort requirements
                         'libdnet-dev' 
                         'flex' 
                         'g++' 
-                        'hwloc' 
+                        'libhwloc-dev' 
                         'libluajit-5.1-dev' 
                         'libssl-dev' 
                         'libpcap-dev' 
