@@ -40,18 +40,20 @@ set_variables() {
     snort_install="${HOME}/snort_repo"
     snort_default_path="/usr/local/snort"
     daq_default_path="/usr/local/lib/daq_s3"
+    pulledpork_bin="/usr/local/bin/pulledpork/"
+    pulledpork_etc="/usr/local/etc/pulledpork/"
 }
 
 install_depedencies() {
-    for i in "$1"
-    do
+    for i in "$@"; do
         if ! dpkg -s "${i}" >/dev/null 2>&1; then
             sudo apt install "${i}" -y -qq
         fi
     done
-    echo -e "${GREEN}[✔] Depedencies installed !${NC}"
-    return 1
+    echo -e "${GREEN}[✔] Dependencies installed!${NC}"
+    return 0
 }
+
 
 install_libdaq() {
     if ! git clone -q https://github.com/snort3/libdaq.git; then 
@@ -86,26 +88,58 @@ install_snort() {
     echo -e "${GREEN}[✔] Snort3 installed !${NC}" 
 }
 
-remove_snort() {
+set_up_snort() {
+    sudo mkdir /etc/snort
+    sudo mkdir /var/log/snort
+    sudo mkdir /usr/local/lib/snort_dynamicrules
+    sudo mkdir /etc/snort/rules
+    sudo touch /etc/snort/white_list.rules  
+    sudo touch /etc/snort/black_list.rules
+}
+
+install_pulledpork3() {
+    if ! git clone -q https://github.com/shirkdog/pulledpork3.git; then 
+        echo -e "${RED}[✘] Error : couldn't get pulledpork repository${NC}"
+        return 0
+    fi
+    cd pulledpork3/
+
+    sudo mkdir ${pulledpork_etc}
+    sudo cp etc/pulledpork.conf ${pulledpork_etc}
+
+    sudo mkdir ${pulledpork_bin}
+    sudo cp pulledpork.py ${pulledpork_bin}
+    sudo cp -r lib/ ${pulledpork_bin}
+
+    ./pulledpork.py -V
+}
+
+remove() {
     sudo rm -rf ${snort_default_path}
     sudo rm -rf ${daq_default_path}
     sudo rm -rf ${snort_install}
-    echo -e "Snort has been removed"
+    sudo rm -rf ${pulledpork_bin}
+    sudo rm -rf ${pulledpork_etc}
+    echo -e "Snort, libdaq and PulledPork have been removed"
 }
 
 start_install() {
     set_variables
 
-    install_depedencies $snort_required_packages
+    install_depedencies "${snort_required_packages[@]}"
 
     mkdir ${snort_install} && cd ${snort_install}
     install_libdaq
 
     cd ${snort_install}
     install_snort
+
+    cd ${snort_install}
+    install_pulledpork3
     snort -V
 }
 
 
-remove_snort
+remove
 start_install
+
