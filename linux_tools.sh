@@ -23,14 +23,6 @@ codium_extensions=(
     "ms-toolsai.vscode-jupyter-slideshow"
 )
 
-python_modules=(
-    "pycryptodome"
-    "numpy"
-    "matplotlib"
-    "jupyter"
-    "numba"
-)
-
 select_package_manager() {
     if [ "$#" -ne 2 ]; then
 
@@ -66,9 +58,6 @@ install_packages() {
     for extension in "${codium_extensions[@]}"; do
         codium --install-extension $extension
     done
-
-    # Python modules: install new package or upgrade them. Works only for python3.11<=
-    pip3 install --upgrade -q "${python_modules[@]}"
 
     echo ">_ Installation done !"
     # Make an update
