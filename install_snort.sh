@@ -44,8 +44,14 @@ set_variables() {
     pulledpork_etc="/usr/local/etc/pulledpork/"
 }
 
+<<<<<<< Updated upstream
 install_dependencies() {
     for i in "$@"; do
+=======
+install_depedencies() {
+    for i in "$1"
+    do
+>>>>>>> Stashed changes
         if ! dpkg -s "${i}" >/dev/null 2>&1; then
             sudo apt install "${i}" -y -qq
         fi
@@ -54,9 +60,29 @@ install_dependencies() {
     return 0
 }
 
+<<<<<<< Updated upstream
 
 install_libdaq() {
     if ! git clone -q https://github.com/snort3/libdaq.git; then 
+=======
+install_snort() {
+    install_depedencies $snort_required_packages
+    if ! git clone -q https://github.com/snort3/snort3.git; then
+        echo -e "${RED}[✘] Error : couldn't get snort3 repository${NC}"
+        return 0
+    fi
+    cd snort3
+    ./configure_cmake.sh --prefix=${snort_default_path} --with-daq-includes=${daq_default_path}/include/ --with-daq-libraries=${daq_default_path}/lib/
+    cd build
+    make -j $(( $(nproc) / 2 )) -s
+    sudo make install -s
+    sudo ldconfig
+    echo -e "${GREEN}[✔] Snort3 installed !${NC}" 
+}
+
+install_libdaq() {
+    if ! git clone -q https://github.com/snort3/libdaq.git; then
+>>>>>>> Stashed changes
         echo -e "${RED}[✘] Error : couldn't get libdaq repository${NC}"
         return 0
     fi
@@ -141,6 +167,11 @@ start_install() {
 }
 
 
+<<<<<<< Updated upstream
 remove
 start_install
 
+=======
+remove_snort
+install_snort
+>>>>>>> Stashed changes
